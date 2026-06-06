@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -29,13 +30,14 @@
             android:textStyle="bold"
             tools:text="A" />
 
-        <ImageView
+        <com.google.android.material.imageview.ShapeableImageView
             android:id="@+id/navAvatarImage"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:visibility="gone"
             android:scaleType="centerCrop"
-            android:contentDescription="@string/nav_profile" />
+            android:contentDescription="@string/nav_profile"
+            app:shapeAppearanceOverlay="@style/CircleAvatar" />
     </FrameLayout>
 
     <TextView

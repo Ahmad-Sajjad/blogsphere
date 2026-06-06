@@ -28,6 +28,7 @@ object ContentRepository {
     private val blogsCol get() = db.collection("blogs")
     private val commentsCol get() = db.collection("comments")
     private val notificationsCol get() = db.collection("notifications")
+    private val storiesCol get() = db.collection("stories")
 
     /** Background scope for write-through operations. */
     private val io = CoroutineScope(SupervisorJob() + Dispatchers.IO)
@@ -54,7 +55,9 @@ object ContentRepository {
         val groups = groupsCol.get().await().documents.mapNotNull { groupFrom(it) }
         val blogs = blogsCol.get().await().documents.mapNotNull { blogFrom(it) }
         val comments = commentsCol.get().await().documents.mapNotNull { commentFrom(it) }
+        val stories = storiesCol.get().await().documents.mapNotNull { storyFrom(it) }
         DataStore.replaceAll(users, groups, blogs, comments)
+        DataStore.replaceStories(stories)
     }
 
     /** Write the demo users/groups/blogs to Firestore exactly once, in a single batch. */
@@ -100,6 +103,12 @@ object ContentRepository {
                 onChanged()
             }
         }
+        listeners += storiesCol.addSnapshotListener { snap, _ ->
+            if (snap != null) {
+                DataStore.replaceStories(snap.documents.mapNotNull { storyFrom(it) })
+                onChanged()
+            }
+        }
     }
 
     /** Stop all real-time listeners (call when leaving the app / logging out). */
@@ -127,22 +136,36 @@ object ContentRepository {
         blogId: String? = null
     ) {
         if (recipientId.isBlank() || recipientId == actorId) return
-        val n = Notification(
-            id = db.collection("notifications").document().id,
-            recipientId = recipientId,
-            type = type,
-            actorName = actorName,
-            text = text,
-            blogId = blogId
-        )
-        fire { notificationsCol.document(n.id).set(notifMap(n)).await() }
+        fire {
+            // Idempotent: don't create a second notification for the same
+            // recipient + type + actor + blog (prevents duplicates from re-likes,
+            // re-binds, or any double-fire). Single-field query → no composite index.
+            val alreadyExists = notificationsCol
+                .whereEqualTo("recipientId", recipientId).get().await()
+                .documents.any {
+                    it.getString("type") == type &&
+                        it.getString("actorName") == actorName &&
+                        it.getString("blogId") == blogId
+                }
+            if (alreadyExists) return@fire
+            val n = Notification(
+                id = notificationsCol.document().id,
+                recipientId = recipientId,
+                type = type,
+                actorName = actorName,
+                text = text,
+                blogId = blogId
+            )
+            notificationsCol.document(n.id).set(notifMap(n)).await()
+        }
     }
 
-    /** Load this user's notifications, newest first (sorted client-side, no index needed). */
+    /** Load this user's notifications, newest first; de-duped defensively. */
     suspend fun loadNotifications(uid: String): List<Notification> = withContext(Dispatchers.IO) {
         notificationsCol.whereEqualTo("recipientId", uid).get().await()
             .documents.mapNotNull { notifFrom(it) }
             .sortedByDescending { it.timestamp }
+            .distinctBy { Triple(it.type, it.actorName, it.blogId) }
     }
 
     /** Mark all of this user's notifications as read. */
@@ -208,6 +231,22 @@ object ContentRepository {
 
     fun deleteComment(id: String) = fire { commentsCol.document(id).delete().await() }
 
+    fun createStory(text: String, bgColor: String, visibility: String) {
+        val uid = AuthRepository.currentUid ?: return
+        val id = storiesCol.document().id
+        val story = Story(id, uid, text, bgColor, visibility)
+        pushStory(story)
+    }
+
+    fun pushStory(s: Story) = fire { storiesCol.document(s.id).set(storyMap(s)).await() }
+
+    fun markStoryViewed(storyId: String, uid: String) {
+        val story = DataStore.stories.find { it.id == storyId } ?: return
+        if (story.viewedBy.contains(uid)) return
+        story.viewedBy.add(uid)
+        pushStory(story)
+    }
+
     // ---- internals --------------------------------------------------------
 
     private fun fire(block: suspend () -> Unit) {
@@ -228,6 +267,7 @@ object ContentRepository {
         "email" to u.email,
         "bio" to u.bio,
         "avatarUri" to u.avatarUri,
+        "avatarData" to u.avatarData,
         "isAdmin" to u.isAdmin,
         "joinedAt" to u.joinedAt,
         "joinedGroupIds" to u.joinedGroupIds.toList(),
@@ -249,6 +289,7 @@ object ContentRepository {
             email = d.getString("email").orEmpty(),
             bio = d.getString("bio").orEmpty(),
             avatarUri = d.getString("avatarUri"),
+            avatarData = d.getString("avatarData"),
             joinedGroupIds = groups.toMutableList(),
             bookmarkedBlogIds = bookmarks.toMutableSet(),
             isAdmin = d.getBoolean("isAdmin") ?: false,
@@ -350,6 +391,30 @@ object ContentRepository {
             blogId = d.getString("blogId"),
             read = d.getBoolean("read") ?: false,
             timestamp = d.getLong("timestamp") ?: System.currentTimeMillis()
+        )
+    }
+
+    private fun storyMap(s: Story) = mapOf(
+        "authorId" to s.authorId,
+        "text" to s.text,
+        "bgColor" to s.bgColor,
+        "visibility" to s.visibility,
+        "createdAt" to s.createdAt,
+        "viewedBy" to s.viewedBy.toList()
+    )
+
+    private fun storyFrom(d: DocumentSnapshot): Story? {
+        val authorId = d.getString("authorId") ?: return null
+        @Suppress("UNCHECKED_CAST")
+        val viewedBy = (d.get("viewedBy") as? List<String>) ?: emptyList()
+        return Story(
+            id = d.id,
+            authorId = authorId,
+            text = d.getString("text").orEmpty(),
+            bgColor = d.getString("bgColor").orEmpty(),
+            visibility = d.getString("visibility").orEmpty(),
+            createdAt = d.getLong("createdAt") ?: System.currentTimeMillis(),
+            viewedBy = viewedBy.toMutableSet()
         )
     }
 }

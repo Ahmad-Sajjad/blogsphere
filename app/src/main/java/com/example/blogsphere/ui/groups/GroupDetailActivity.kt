@@ -47,6 +47,14 @@ class GroupDetailActivity : AppCompatActivity() {
             "${group.memberIds.size} member${if (group.memberIds.size == 1) "" else "s"}"
         findViewById<TextView>(R.id.inviteCode).text = group.inviteCode
 
+        // Members
+        val rvMembers = findViewById<RecyclerView>(R.id.rvMembers)
+        val members = group.memberIds.mapNotNull { DataStore.findUserById(it) }
+        rvMembers.adapter = UserChipAdapter(members) { user ->
+            startActivity(Intent(this, UserProfileActivity::class.java)
+                .putExtra(UserProfileActivity.EXTRA_USER_ID, user.id))
+        }
+
         val me = DataStore.currentUser
         val leave = findViewById<MaterialButton>(R.id.btnLeave)
         leave.visibility = if (me != null && group.memberIds.contains(me.id) && me.id != group.creatorId) View.VISIBLE else View.GONE

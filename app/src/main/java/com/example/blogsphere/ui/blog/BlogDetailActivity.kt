@@ -23,8 +23,7 @@ import com.example.blogsphere.data.ContentRepository
 import com.example.blogsphere.data.DataStore
 import com.example.blogsphere.util.Broadcasts
 import com.example.blogsphere.util.animateHeart
-import com.example.blogsphere.util.avatarColor
-import com.example.blogsphere.util.initialOf
+import com.example.blogsphere.util.bindAvatar
 import com.example.blogsphere.util.installThemeToggle
 import com.example.blogsphere.util.relativeTimeFrom
 import com.example.blogsphere.util.toast
@@ -130,8 +129,12 @@ class BlogDetailActivity : AppCompatActivity() {
         val b = blog ?: return
         val author = DataStore.findUserById(b.authorId)
 
-        findViewById<View>(R.id.avatarBg).background.setTint(avatarColor(author?.username ?: "?"))
-        findViewById<TextView>(R.id.avatarInitial).text = initialOf(author?.username ?: "?")
+        bindAvatar(
+            author,
+            findViewById(R.id.avatarBg),
+            findViewById(R.id.avatarInitial),
+            findViewById<ImageView>(R.id.avatarImage)
+        )
         val authorName = findViewById<TextView>(R.id.authorName)
         authorName.text = author?.username ?: "unknown"
         findViewById<TextView>(R.id.timestamp).text =
@@ -264,8 +267,12 @@ class BlogDetailActivity : AppCompatActivity() {
                 .inflate(R.layout.item_comment, container, false)
             val cAuthor = DataStore.findUserById(c.authorId)
             val name = cAuthor?.username ?: "unknown"
-            row.findViewById<View>(R.id.cmtAvatarBg).background.setTint(avatarColor(name))
-            row.findViewById<TextView>(R.id.cmtAvatarInitial).text = initialOf(name)
+            bindAvatar(
+                cAuthor,
+                row.findViewById(R.id.cmtAvatarBg),
+                row.findViewById(R.id.cmtAvatarInitial),
+                row.findViewById<ImageView>(R.id.cmtAvatarImage)
+            )
             row.findViewById<TextView>(R.id.cmtAuthor).text = name
             row.findViewById<TextView>(R.id.cmtTimestamp).text = relativeTimeFrom(c.timestamp)
             row.findViewById<TextView>(R.id.cmtText).text = c.text

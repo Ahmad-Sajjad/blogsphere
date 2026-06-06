@@ -125,6 +125,25 @@
                     android:visibility="gone" />
             </LinearLayout>
 
+            <!-- Members -->
+            <TextView
+                style="@style/Text.SectionHeader"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="16dp"
+                android:layout_marginTop="20dp"
+                android:text="Members" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rvMembers"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:clipToPadding="false"
+                android:orientation="horizontal"
+                android:paddingHorizontal="12dp"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
+
             <TextView
                 style="@style/Text.SectionHeader"
                 android:layout_width="wrap_content"

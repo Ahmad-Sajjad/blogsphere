@@ -20,6 +20,7 @@ object DataStore {
     val blogs: MutableList<Blog> = mutableListOf()
     val groups: MutableList<Group> = mutableListOf()
     val comments: MutableList<Comment> = mutableListOf()
+    val stories: MutableList<Story> = mutableListOf()
 
     var currentUser: User? = null
 
@@ -211,6 +212,26 @@ object DataStore {
     /** Replace just the comments slice of the cache (used by the real-time listener). */
     fun replaceComments(newComments: List<Comment>) {
         comments.clear(); comments.addAll(newComments)
+    }
+
+    /** Replace just the stories slice of the cache (used by the real-time listener). */
+    fun replaceStories(newStories: List<Story>) {
+        stories.clear(); stories.addAll(newStories)
+    }
+
+    fun activeStories() = stories.filter {
+        System.currentTimeMillis() - it.createdAt < 86_400_000
+    }
+
+    fun storiesVisibleTo(viewer: User) = activeStories().filter {
+        it.visibility == "all" || it.authorId == viewer.id || viewer.following.contains(it.authorId)
+    }
+
+    fun activeStoriesByAuthor(authorId: String) = activeStories().filter { it.authorId == authorId }
+
+    fun hasUnseenStory(authorId: String, viewerId: String): Boolean {
+        val active = activeStoriesByAuthor(authorId)
+        return active.isNotEmpty() && active.any { !it.viewedBy.contains(viewerId) }
     }
 
     fun resetAndReseed() {

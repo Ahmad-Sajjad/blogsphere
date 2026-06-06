@@ -24,8 +24,7 @@ import com.example.blogsphere.data.Comment
 import com.example.blogsphere.data.DataStore
 import com.example.blogsphere.util.Broadcasts
 import com.example.blogsphere.util.animateHeart
-import com.example.blogsphere.util.avatarColor
-import com.example.blogsphere.util.initialOf
+import com.example.blogsphere.util.bindAvatar
 import com.example.blogsphere.util.relativeTimeFrom
 import com.example.blogsphere.util.toast
 import com.google.android.material.textfield.TextInputEditText
@@ -42,6 +41,7 @@ class BlogAdapter(
         val authorRow: View = v.findViewById(R.id.authorRow)
         val avatarBg: View = v.findViewById(R.id.avatarBg)
         val avatarInitial: TextView = v.findViewById(R.id.avatarInitial)
+        val avatarImage: ImageView = v.findViewById(R.id.avatarImage)
         val authorName: TextView = v.findViewById(R.id.authorName)
         val timestamp: TextView = v.findViewById(R.id.timestamp)
         val groupChip: TextView = v.findViewById(R.id.groupChip)
@@ -68,8 +68,7 @@ class BlogAdapter(
         val ctx = h.itemView.context
 
         // Author
-        h.avatarBg.background.setTint(avatarColor(author?.username ?: "?"))
-        h.avatarInitial.text = initialOf(author?.username ?: "?")
+        bindAvatar(author, h.avatarBg, h.avatarInitial, h.avatarImage)
         h.authorName.text = author?.username ?: "unknown"
         h.timestamp.text = relativeTimeFrom(blog.timestamp) +
             if (blog.viewedBy.isNotEmpty()) "  ·  ${blog.viewedBy.size} views" else ""
@@ -204,8 +203,12 @@ class BlogAdapter(
                 val row = LayoutInflater.from(ctx).inflate(R.layout.item_comment, container, false)
                 val cAuthor = DataStore.findUserById(c.authorId)
                 val name = cAuthor?.username ?: "unknown"
-                row.findViewById<View>(R.id.cmtAvatarBg).background.setTint(avatarColor(name))
-                row.findViewById<TextView>(R.id.cmtAvatarInitial).text = initialOf(name)
+                bindAvatar(
+                    cAuthor,
+                    row.findViewById(R.id.cmtAvatarBg),
+                    row.findViewById(R.id.cmtAvatarInitial),
+                    row.findViewById<ImageView>(R.id.cmtAvatarImage)
+                )
                 row.findViewById<TextView>(R.id.cmtAuthor).text = name
                 row.findViewById<TextView>(R.id.cmtTimestamp).text = relativeTimeFrom(c.timestamp)
                 row.findViewById<TextView>(R.id.cmtText).text = c.text

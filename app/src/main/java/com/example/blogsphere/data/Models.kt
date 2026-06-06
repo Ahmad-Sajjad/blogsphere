@@ -13,6 +13,9 @@ data class User(
     var email: String,
     var bio: String = "",
     var avatarUri: String? = null,
+    /** Small Base64-encoded JPEG thumbnail of the avatar, stored in Firestore so the
+     *  picture shows for every user on every device (no Cloud Storage needed). */
+    var avatarData: String? = null,
     val joinedGroupIds: MutableList<String> = mutableListOf(),
     val bookmarkedBlogIds: MutableSet<String> = mutableSetOf(),
     var isAdmin: Boolean = false,
@@ -50,6 +53,16 @@ data class Comment(
     val authorId: String,
     var text: String,
     val timestamp: Long = System.currentTimeMillis()
+)
+
+data class Story(
+    val id: String,
+    val authorId: String,
+    val text: String,
+    val bgColor: String, // hex
+    val visibility: String, // "all" | "followers"
+    val createdAt: Long = System.currentTimeMillis(),
+    val viewedBy: MutableSet<String> = mutableSetOf()
 )
 
 /**

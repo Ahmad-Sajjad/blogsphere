@@ -101,6 +101,11 @@
         <item name="android:letterSpacing">0.08</item>
     </style>
 
+    <!-- Circular clip for avatar ShapeableImageViews -->
+    <style name="CircleAvatar">
+        <item name="cornerSize">50%</item>
+    </style>
+
     <!-- Backwards-compat aliases used by existing layouts -->
     <style name="TitleHeading" parent="Text.Title" />
     <style name="SubtitleText" parent="Text.Body" />

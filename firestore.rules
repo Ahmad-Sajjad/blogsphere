@@ -82,5 +82,18 @@ service cloud.firestore {
       allow update: if signedIn() && resource.data.recipientId == request.auth.uid;
       allow delete: if signedIn() && (resource.data.recipientId == request.auth.uid || isAdmin());
     }
+
+    // ---- stories --------------------------------------------------------
+    match /stories/{storyId} {
+      allow read: if signedIn();
+      allow create: if signedIn() && request.resource.data.authorId == request.auth.uid;
+      // Anyone signed-in may mark a story as viewed.
+      allow update: if signedIn() && (
+        resource.data.authorId == request.auth.uid
+        || isAdmin()
+        || onlyChanged(['viewedBy'])
+      );
+      allow delete: if signedIn() && (resource.data.authorId == request.auth.uid || isAdmin());
+    }
   }
 }

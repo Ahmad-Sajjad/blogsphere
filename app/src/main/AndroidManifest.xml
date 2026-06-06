@@ -42,6 +42,9 @@
         <activity android:name=".ui.admin.AdminActivity" android:exported="false" />
         <activity android:name=".ui.saved.SavedBlogsActivity" android:exported="false" />
         <activity android:name=".ui.notifications.NotificationsActivity" android:exported="false" />
+        <activity android:name=".ui.profile.UserListActivity" android:exported="false" />
+        <activity android:name=".ui.stories.StoryComposerActivity" android:exported="false" />
+        <activity android:name=".ui.stories.StoryViewerActivity" android:exported="false" />
 
     </application>
 

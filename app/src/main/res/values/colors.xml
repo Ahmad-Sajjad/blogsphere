@@ -18,6 +18,7 @@
     <color name="on_surface_variant_dark">#D7C7BC</color>
     <color name="divider_light">#EDE0D6</color>
     <color name="divider_dark">#3A2E27</color>
+    <color name="divider">#EDE0D6</color>
 
     <!-- Brand variants for dark mode -->
     <color name="orange_on_dark">#FF8A65</color>          <!-- Saturated tangerine, pops on dark -->

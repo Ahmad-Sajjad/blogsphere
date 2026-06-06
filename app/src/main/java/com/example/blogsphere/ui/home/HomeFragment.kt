@@ -35,8 +35,10 @@ class HomeFragment : Fragment() {
     }
 
     private lateinit var adapter: BlogAdapter
+    private lateinit var storyAdapter: StoryTrayAdapter
     private lateinit var swipe: SwipeRefreshLayout
     private lateinit var rv: RecyclerView
+    private lateinit var rvStories: RecyclerView
     private lateinit var etSearch: EditText
     private lateinit var emptyState: View
     private lateinit var chipGroup: ChipGroup
@@ -50,6 +52,7 @@ class HomeFragment : Fragment() {
             // otherwise a like/view/comment update would churn the chips and could reset the
             // selected "Following" filter. The feed itself always refreshes.
             if (intent?.action == Broadcasts.ACTION_GROUPS_CHANGED) rebuildChips()
+            if (intent?.action == Broadcasts.ACTION_STORIES_CHANGED) refreshStories()
             applyFilters()
         }
     }
@@ -62,6 +65,7 @@ class HomeFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         swipe = view.findViewById(R.id.swipeRefresh)
         rv = view.findViewById(R.id.rvBlogs)
+        rvStories = view.findViewById(R.id.rvStories)
         etSearch = view.findViewById(R.id.etSearch)
         emptyState = view.findViewById(R.id.emptyState)
         chipGroup = view.findViewById(R.id.groupChips)
@@ -112,6 +116,7 @@ class HomeFragment : Fragment() {
         }
 
         rebuildChips()
+        refreshStories()
         applyFilters()
     }
 
@@ -122,8 +127,10 @@ class HomeFragment : Fragment() {
                 addAction(Broadcasts.ACTION_NEW_BLOG)
                 addAction(Broadcasts.ACTION_BLOG_UPDATED)
                 addAction(Broadcasts.ACTION_GROUPS_CHANGED)
+                addAction(Broadcasts.ACTION_STORIES_CHANGED)
             })
         rebuildChips()
+        refreshStories()
         applyFilters()
     }
 
@@ -210,5 +217,26 @@ class HomeFragment : Fragment() {
 
         adapter.replace(filtered)
         emptyState.visibility = if (filtered.isEmpty()) View.VISIBLE else View.GONE
+    }
+
+    private fun refreshStories() {
+        val me = DataStore.currentUser ?: return
+        val visibleStories = DataStore.storiesVisibleTo(me)
+        val authorsWithStories = visibleStories.map { it.authorId }.distinct()
+            .filter { it != me.id } // exclude me, handled separately by adapter
+            .mapNotNull { DataStore.findUserById(it) }
+
+        storyAdapter = StoryTrayAdapter(
+            authors = authorsWithStories,
+            me = me,
+            onAuthorClick = { author ->
+                startActivity(Intent(requireContext(), com.example.blogsphere.ui.stories.StoryViewerActivity::class.java)
+                    .putExtra("authorId", author.id))
+            },
+            onAddClick = {
+                startActivity(Intent(requireContext(), com.example.blogsphere.ui.stories.StoryComposerActivity::class.java))
+            }
+        )
+        rvStories.adapter = storyAdapter
     }
 }

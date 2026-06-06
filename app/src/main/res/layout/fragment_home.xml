@@ -46,6 +46,17 @@
         </LinearLayout>
     </androidx.cardview.widget.CardView>
 
+    <!-- Story tray -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rvStories"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:clipToPadding="false"
+        android:orientation="horizontal"
+        android:paddingHorizontal="14dp"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
+
     <!-- Group filter chips -->
     <HorizontalScrollView
         android:layout_width="match_parent"

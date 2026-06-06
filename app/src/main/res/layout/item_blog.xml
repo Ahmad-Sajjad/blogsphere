@@ -55,6 +55,14 @@
                         android:textSize="16sp"
                         android:textStyle="bold"
                         android:text="A" />
+
+                    <com.google.android.material.imageview.ShapeableImageView
+                        android:id="@+id/avatarImage"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:scaleType="centerCrop"
+                        android:visibility="gone"
+                        app:shapeAppearanceOverlay="@style/CircleAvatar" />
                 </FrameLayout>
 
                 <LinearLayout

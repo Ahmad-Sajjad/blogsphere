@@ -14,6 +14,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "689310911353-0fq0mqcpm8f82iufoimi80uoecdbr8g3.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.company.blogsphere",
+            "certificate_hash": "cd393f0d873ba954b046e4ef8512732b8655e077"
+          }
+        },
+        {
           "client_id": "689310911353-rrapu4iu7kev9ps16tqnb2q5n0jro677.apps.googleusercontent.com",
           "client_type": 3
         }

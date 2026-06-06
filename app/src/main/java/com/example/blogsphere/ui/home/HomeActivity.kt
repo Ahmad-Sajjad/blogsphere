@@ -33,6 +33,7 @@ import com.example.blogsphere.ui.settings.SettingsActivity
 import com.example.blogsphere.util.Broadcasts
 import com.example.blogsphere.util.ConnectivityReceiver
 import com.example.blogsphere.util.avatarColor
+import com.example.blogsphere.util.bindAvatar
 import com.example.blogsphere.util.initialOf
 import com.example.blogsphere.util.installThemeToggle
 import com.google.android.material.bottomnavigation.BottomNavigationView
@@ -168,6 +169,7 @@ class HomeActivity : AppCompatActivity() {
         lbm.sendBroadcast(Intent(Broadcasts.ACTION_BLOG_UPDATED))
         lbm.sendBroadcast(Intent(Broadcasts.ACTION_GROUPS_CHANGED))
         lbm.sendBroadcast(Intent(Broadcasts.ACTION_COMMENTS_CHANGED))
+        lbm.sendBroadcast(Intent(Broadcasts.ACTION_STORIES_CHANGED))
     }
 
     override fun onPause() {
@@ -184,21 +186,9 @@ class HomeActivity : AppCompatActivity() {
         val usernameTv = header.findViewById<TextView>(R.id.navUsername)
         val emailTv = header.findViewById<TextView>(R.id.navEmail)
 
-        avatarBg.background.setTint(avatarColor(user.username))
-        avatarInitial.text = initialOf(user.username)
         usernameTv.text = user.username
         emailTv.text = user.email
-
-        if (!user.avatarUri.isNullOrEmpty()) {
-            runCatching {
-                avatarImage.setImageURI(Uri.parse(user.avatarUri))
-                avatarImage.visibility = View.VISIBLE
-                avatarInitial.visibility = View.GONE
-            }
-        } else {
-            avatarImage.visibility = View.GONE
-            avatarInitial.visibility = View.VISIBLE
-        }
+        bindAvatar(user, avatarBg, avatarInitial, avatarImage)
     }
 
     private fun setupDrawerMenu() {

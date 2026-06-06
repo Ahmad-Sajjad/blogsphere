@@ -27,6 +27,14 @@
             android:textColor="@color/white"
             android:textSize="14sp"
             android:textStyle="bold" />
+
+        <com.google.android.material.imageview.ShapeableImageView
+            android:id="@+id/cmtAvatarImage"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scaleType="centerCrop"
+            android:visibility="gone"
+            app:shapeAppearanceOverlay="@style/CircleAvatar" />
     </FrameLayout>
 
     <LinearLayout
