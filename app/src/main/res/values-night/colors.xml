@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Override the *_light color names in dark mode so layouts that hardcode
+  e.g. "@color/on_surface_variant_light" still render legibly. The names
+  stay misleading; the values adapt.
+-->
+<resources>
+    <color name="on_surface_light">#F5EDE8</color>
+    <color name="on_surface_variant_light">#D7C7BC</color>
+    <color name="bg_light">#1A1411</color>
+    <color name="surface_light">#261E1A</color>
+    <color name="divider_light">#3A2E27</color>
+</resources>

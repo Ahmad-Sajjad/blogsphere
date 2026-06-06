@@ -1,0 +1,54 @@
+<resources>
+    <string name="app_name">BlogSphere</string>
+    <string name="app_tagline">Write. Share. Connect.</string>
+
+    <!-- Drawer accessibility labels (used by ActionBarDrawerToggle) -->
+    <string name="drawer_open">Open navigation drawer</string>
+    <string name="drawer_close">Close navigation drawer</string>
+
+    <string name="toggle_theme">Toggle light / dark theme</string>
+
+    <!-- Auth -->
+    <string name="login">Login</string>
+    <string name="sign_up">Sign Up</string>
+    <string name="email">Email</string>
+    <string name="password">Password</string>
+    <string name="confirm_password">Confirm Password</string>
+    <string name="username">Username</string>
+    <string name="bio">Bio (optional)</string>
+    <string name="dont_have_account">Don\'t have an account? Sign Up</string>
+    <string name="have_account">Already have an account? Login</string>
+    <string name="logout">Logout</string>
+
+    <!-- Nav -->
+    <string name="nav_home">Home</string>
+    <string name="nav_groups">Groups</string>
+    <string name="nav_create">Create</string>
+    <string name="nav_profile">Profile</string>
+    <string name="drawer_admin">Admin Panel</string>
+    <string name="drawer_settings">Settings</string>
+    <string name="drawer_about">About</string>
+
+    <!-- Content -->
+    <string name="write_title">Title</string>
+    <string name="write_content">What\'s on your mind?</string>
+    <string name="post">Post</string>
+    <string name="public_visibility">Public</string>
+    <string name="group_visibility">Post to group:</string>
+
+    <!-- Drawer descriptions -->
+    <string name="open_drawer">Open drawer</string>
+    <string name="close_drawer">Close drawer</string>
+
+    <!-- Common -->
+    <string name="cancel">Cancel</string>
+    <string name="ok">OK</string>
+    <string name="delete">Delete</string>
+    <string name="edit">Edit</string>
+    <string name="save">Save</string>
+    <string name="share">Share</string>
+    <string name="copy">Copy</string>
+    <string name="empty_feed">No blogs yet — be the first to post!</string>
+    <string name="empty_my_blogs">You haven\'t posted anything yet.</string>
+    <string name="empty_groups">You haven\'t joined any groups yet.</string>
+</resources>

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Adaptive icon foreground (108dp viewport, ~66dp safe centre).
+  Stylised white "B" for BlogSphere, sized so it stays inside the safe zone.
+-->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+
+    <path
+        android:fillColor="#FFFFFF"
+        android:fillType="evenOdd"
+        android:pathData="M40,32 h26 a14,14 0 0 1 14,14 v0 a13,13 0 0 1 -7,11.5 a14,14 0 0 1 9,13 v0 a14,14 0 0 1 -14,14 h-28 z M48,40 v14 h18 a7,7 0 0 0 0,-14 z M48,62 v14 h20 a7,7 0 0 0 0,-14 z" />
+</vector>

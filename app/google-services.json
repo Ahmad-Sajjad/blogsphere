@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "689310911353",
+    "project_id": "mad-final-1a09d",
+    "storage_bucket": "mad-final-1a09d.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:689310911353:android:4fcc223860eb73966bbda8",
+        "android_client_info": {
+          "package_name": "com.company.blogsphere"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "689310911353-rrapu4iu7kev9ps16tqnb2q5n0jro677.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAu88u31uKaMbkUxA6Z9hRJheLNLE2cieA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "689310911353-rrapu4iu7kev9ps16tqnb2q5n0jro677.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

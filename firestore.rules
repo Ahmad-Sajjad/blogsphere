@@ -1,0 +1,86 @@
+rules_version = '2';
+
+// BlogSphere Firestore security rules.
+//
+// How to apply: Firebase console → Firestore Database → Rules → paste this → Publish.
+// (Or with the Firebase CLI: `firebase deploy --only firestore:rules`.)
+//
+// Model: everything requires a signed-in user. Users may only edit their own content;
+// admins (users/{uid}.isAdmin == true) may moderate anything. Special cases let any
+// signed-in user "like" a blog or join/leave a group without owning it.
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ---- helpers --------------------------------------------------------
+    function signedIn() {
+      return request.auth != null;
+    }
+    function isOwner(uid) {
+      return signedIn() && request.auth.uid == uid;
+    }
+    function isAdmin() {
+      return signedIn()
+        && exists(/databases/$(database)/documents/users/$(request.auth.uid))
+        && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.isAdmin == true;
+    }
+    // True when an update only touches the given fields (and nothing else).
+    function onlyChanged(fields) {
+      return request.resource.data.diff(resource.data).affectedKeys().hasOnly(fields);
+    }
+
+    // ---- users ----------------------------------------------------------
+    match /users/{uid} {
+      allow read: if signedIn();
+      allow create: if signedIn();              // sign-up writes the profile, seeding writes demo users
+      allow update: if isOwner(uid) || isAdmin();
+      allow delete: if isOwner(uid) || isAdmin();
+    }
+
+    // ---- blogs ----------------------------------------------------------
+    match /blogs/{blogId} {
+      allow read: if signedIn();
+      allow create: if signedIn();
+      // Author/admin can fully edit or delete. Anyone signed-in may only change
+      // likes or the view counter (so liking/opening another user's blog works).
+      allow update: if signedIn() && (
+        resource.data.authorId == request.auth.uid
+        || isAdmin()
+        || onlyChanged(['likedByUserIds', 'viewedBy'])
+      );
+      allow delete: if signedIn() && (resource.data.authorId == request.auth.uid || isAdmin());
+    }
+
+    // ---- comments -------------------------------------------------------
+    match /comments/{commentId} {
+      allow read: if signedIn();
+      allow create: if signedIn() && request.resource.data.authorId == request.auth.uid;
+      allow delete: if signedIn() && (resource.data.authorId == request.auth.uid || isAdmin());
+    }
+
+    // ---- groups ---------------------------------------------------------
+    match /groups/{groupId} {
+      allow read: if signedIn();
+      allow create: if signedIn();
+      // Creator/admin can edit/delete; anyone signed-in may only change membership
+      // (join / leave updates memberIds).
+      allow update: if signedIn() && (
+        resource.data.creatorId == request.auth.uid
+        || isAdmin()
+        || onlyChanged(['memberIds'])
+      );
+      allow delete: if signedIn() && (resource.data.creatorId == request.auth.uid || isAdmin());
+    }
+
+    // ---- notifications --------------------------------------------------
+    match /notifications/{notifId} {
+      // You can only read your own notifications (admins can read all).
+      allow read: if signedIn() && (resource.data.recipientId == request.auth.uid || isAdmin());
+      // Anyone signed-in may create a notification for someone (like/comment/follow).
+      allow create: if signedIn();
+      // Only the recipient may mark theirs read; recipient/admin may delete.
+      allow update: if signedIn() && resource.data.recipientId == request.auth.uid;
+      allow delete: if signedIn() && (resource.data.recipientId == request.auth.uid || isAdmin());
+    }
+  }
+}
