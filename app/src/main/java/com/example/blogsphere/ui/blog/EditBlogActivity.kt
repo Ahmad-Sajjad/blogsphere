@@ -53,10 +53,14 @@ class EditBlogActivity : AppCompatActivity() {
             if (newTitle.length < 3) { tilTitle.error = "Title too short"; return@setOnClickListener }
             if (newContent.length < 10) { tilContent.error = "Content too short"; return@setOnClickListener }
 
-            blog.title = newTitle
-            blog.content = newContent
-            blog.timestamp = System.currentTimeMillis()
-            ContentRepository.pushBlog(blog)   // persist the edit
+            // Replace with a new instance so the Home feed's DiffUtil sees the change
+            // (mutating the same object in place would look identical to itself).
+            val updated = blog.copy(
+                title = newTitle,
+                content = newContent,
+                timestamp = System.currentTimeMillis()
+            )
+            DataStore.updateBlog(updated)   // swaps the cached instance + persists
             toast("Blog updated")
             LocalBroadcastManager.getInstance(this)
                 .sendBroadcast(Intent(Broadcasts.ACTION_BLOG_UPDATED))

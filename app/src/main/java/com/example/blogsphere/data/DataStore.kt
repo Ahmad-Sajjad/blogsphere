@@ -68,6 +68,16 @@ object DataStore {
         ContentRepository.pushBlog(b)
     }
 
+    /**
+     * Replace an edited blog with a NEW instance (so RecyclerView DiffUtil detects the change
+     * instead of comparing a mutated object to itself) and persist it.
+     */
+    fun updateBlog(updated: Blog) {
+        val i = blogs.indexOfFirst { it.id == updated.id }
+        if (i >= 0) blogs[i] = updated
+        ContentRepository.pushBlog(updated)
+    }
+
     fun deleteBlog(id: String) {
         blogs.removeAll { it.id == id }
         comments.removeAll { it.blogId == id }

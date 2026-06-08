@@ -16,7 +16,6 @@ local.properties
 
 # Build outputs
 **/build/
-*.apk
 *.aab
 
 # IDE / tooling

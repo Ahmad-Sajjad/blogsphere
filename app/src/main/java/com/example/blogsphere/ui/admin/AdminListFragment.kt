@@ -190,9 +190,11 @@ class AdminListFragment : Fragment() {
                 .setTitle("Edit blog")
                 .setView(container)
                 .setPositiveButton(R.string.save) { _, _ ->
-                    b.title = etTitle.text.toString().trim().ifBlank { b.title }
-                    b.content = etContent.text.toString().trim().ifBlank { b.content }
-                    ContentRepository.pushBlog(b)   // persist the edit
+                    val updated = b.copy(
+                        title = etTitle.text.toString().trim().ifBlank { b.title },
+                        content = etContent.text.toString().trim().ifBlank { b.content }
+                    )
+                    DataStore.updateBlog(updated)   // new instance so feeds refresh + persists
                     refresh(); toast("Blog updated"); broadcast()
                 }
                 .setNegativeButton(R.string.cancel, null)
